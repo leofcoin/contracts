@@ -1,0 +1,29 @@
+{
+  "name": "contracts",
+  "version": "0.1.0",
+  "description": "",
+  "exports": {
+    "./factory": "./exports/factory.js",
+    "./name-token": "./exports/name-token.js",
+    "./power-token": "./exports/power-token.js",
+    "./native-token": "./exports/native-token.js",
+    "./validators": "./exports/validators.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leofcoin/contracts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leofcoin/contracts/issues"
+  },
+  "homepage": "https://github.com/leofcoin/contracts#readme",
+  "dependencies": {
+    "@leofcoin/standards": "^0.1.1"
+  }
+}
