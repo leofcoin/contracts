@@ -38,6 +38,10 @@ export default class Factory {
     return this.#totalContracts
   }
 
+  isRegistered(address) {
+    return this.#contracts.includes(address)
+  }
+
   /**
    * 
    * @param {Address} address contract address to register
