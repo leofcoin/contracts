@@ -1,6 +1,6 @@
 import typescript from '@rollup/plugin-typescript'
 import tsConfig from './tsconfig.json' assert { type: 'json'}
-
+import terser from '@rollup/plugin-terser'
 import resolve from '@rollup/plugin-node-resolve'
 
 
@@ -14,7 +14,10 @@ export default [{
     resolve({
       mainFields: ['exports']
     }),
-    typescript(tsConfig)
+    typescript(tsConfig),
+    terser({
+      mangle: false
+    })
   ]
 }, {
   input: './src/name-service.ts',
@@ -26,7 +29,10 @@ export default [{
     resolve({
       mainFields: ['exports']
     }),
-    typescript(tsConfig)
+    typescript(tsConfig),
+    terser({
+      mangle: false
+    })
   ]
 }, {
   input: './src/native-token.ts',
@@ -38,7 +44,10 @@ export default [{
     resolve({
       mainFields: ['exports']
     }),
-    typescript(tsConfig)
+    typescript(tsConfig),
+    terser({
+      mangle: false
+    })
   ]
 }, {
   input: './src/power-token.ts',
@@ -50,7 +59,10 @@ export default [{
     resolve({
       mainFields: ['exports']
     }),
-    typescript(tsConfig)
+    typescript(tsConfig),
+    terser({
+      mangle: false
+    })
   ]
 }, {
   input: './src/validators.ts',
@@ -62,6 +74,9 @@ export default [{
     resolve({
       mainFields: ['exports']
     }),
-    typescript(tsConfig)
+    typescript(tsConfig),
+    terser({
+      mangle: false
+    })
   ]
 }]
