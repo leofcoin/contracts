@@ -1,5 +1,5 @@
 type registry = {
-    name: {
+    name?: {
         address: address;
         owner: address;
     };

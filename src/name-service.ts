@@ -1,5 +1,5 @@
 type registry = {
-  name: {
+  name?: {
     address: address,
     owner: address
   }
@@ -21,7 +21,7 @@ export default class NameService {
   /**
    * Object => string
    */
-  #registry: registry
+  #registry: registry = {}
 
   /**
    * => string
