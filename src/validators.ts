@@ -16,9 +16,9 @@ export default class Validators extends Roles {
    */
   #validators = {}
 
-  #currency
+  #currency: address
 
-  #minimumBalance
+  #minimumBalance: BigNumberish
 
   get state() {
     return {
@@ -31,7 +31,7 @@ export default class Validators extends Roles {
     }
   }
 
-  constructor(tokenAddress, state) {
+  constructor(tokenAddress: address, state) {
     super(state?.roles)
     if (state) {
       this.#minimumBalance = state.minimumBalance
