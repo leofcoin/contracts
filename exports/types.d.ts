@@ -1,2 +1,1 @@
-import globals from '@leofcoin/global-types';
-export default globals;
+import '@leofcoin/global-types';

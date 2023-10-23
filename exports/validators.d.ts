@@ -1,13 +1,19 @@
 import Roles from '@leofcoin/standards/roles.js';
 export default class Validators extends Roles {
     #private;
-    get state(): any;
-    constructor(tokenAddress: any, state: any);
+    get state(): {
+        minimumBalance: BigNumberish;
+        currency: string;
+        totalValidators: number;
+        activeValidators: number;
+        validators: {};
+    };
+    constructor(tokenAddress: address, state: any);
     get name(): string;
-    get currency(): any;
+    get currency(): string;
     get validators(): {};
     get totalValidators(): number;
-    get minimumBalance(): any;
+    get minimumBalance(): BigNumberish;
     changeCurrency(currency: any): void;
     has(validator: any): boolean;
     addValidator(validator: address): Promise<void>;
