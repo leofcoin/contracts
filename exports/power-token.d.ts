@@ -1,4 +1,4 @@
-import Token from '@leofcoin/standards/token.js';
+import Token, { TokenState } from '@leofcoin/standards/token.js';
 export default class Power extends Token {
-    constructor(state: {});
+    constructor(state: TokenState);
 }

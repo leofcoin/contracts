@@ -1,4 +1,4 @@
-import Token from '@leofcoin/standards/token.js';
-export default class ArtOnline extends Token {
-    constructor(state: {});
+import Token, { TokenState } from '@leofcoin/standards/token.js';
+export default class Leofcoin extends Token {
+    constructor(state: TokenState);
 }
