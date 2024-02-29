@@ -1,26 +1,37 @@
-export default class Factory {
+import { PublicVoting, TokenReceiver } from '@leofcoin/standards'
+import type { PublicVotingState } from '@leofcoin/standards/public-voting'
+import { TokenReceiverState } from '@leofcoin/standards/token-receiver'
+
+export interface FactoryState extends TokenReceiverState {
+  contracts: any[]
+  totalContracts: typeof BigNumber
+}
+
+export default class Factory extends TokenReceiver {
   /**
    * string
    */
-  #name = 'ArtOnlineContractFactory'
+  #name = 'LeofcoinContractFactory'
   /**
    * uint
    */
-  #totalContracts = 0
+  #totalContracts = BigNumber['from'](0)
   /**
    * Array => string
    */
   #contracts = []
 
-  constructor(state: { contracts: any[]; totalContracts: number }) {
+  constructor(tokenToReceive: address, tokenAmountToReceive: typeof BigNumber, state: FactoryState) {
+    super(tokenToReceive, tokenAmountToReceive, true, state as TokenReceiverState)
     if (state) {
       this.#contracts = state.contracts
       this.#totalContracts = state.totalContracts
     }
   }
 
-  get state() {
+  get state(): PublicVotingState {
     return {
+      ...super.state,
       totalContracts: this.#totalContracts,
       contracts: this.#contracts
     }
@@ -42,15 +53,21 @@ export default class Factory {
     return this.#contracts.includes(address)
   }
 
+  #isOwner(address: address) {
+    return msg.staticCall(address, 'hasRole', [msg.sender, 'OWNER'])
+  }
+
   /**
-   * 
+   *
    * @param {Address} address contract address to register
    */
   async registerContract(address: string) {
-    await msg.staticCall(address, 'hasRole', [msg.sender, 'OWNER'])
-    if (this.#contracts.includes(address)) throw new Error('already registered')
+    if (!this._canPay()) throw new Error(`can't register, balance to low`)
 
-    this.#totalContracts += 1
+    if (!(await this.#isOwner(address))) throw new Error(`You don't own that contract`)
+    if (this.#contracts.includes(address)) throw new Error('already registered')
+    await this._payTokenToReceive()
+    this.#totalContracts.add(1)
     this.#contracts.push(address)
   }
 }

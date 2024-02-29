@@ -1,16 +1,17 @@
-export default class Factory {
+import { TokenReceiver } from '@leofcoin/standards';
+import type { PublicVotingState } from '@leofcoin/standards/public-voting';
+import { TokenReceiverState } from '@leofcoin/standards/token-receiver';
+export interface FactoryState extends TokenReceiverState {
+    contracts: any[];
+    totalContracts: typeof BigNumber;
+}
+export default class Factory extends TokenReceiver {
     #private;
-    constructor(state: {
-        contracts: any[];
-        totalContracts: number;
-    });
-    get state(): {
-        totalContracts: number;
-        contracts: any[];
-    };
+    constructor(tokenToReceive: address, tokenAmountToReceive: typeof BigNumber, state: FactoryState);
+    get state(): PublicVotingState;
     get name(): string;
     get contracts(): any[];
-    get totalContracts(): number;
+    get totalContracts(): any;
     isRegistered(address: any): boolean;
     /**
      *

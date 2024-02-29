@@ -1,6 +1,6 @@
 type registry = {
   name?: {
-    address: address,
+    address: address
     owner: address
   }
 }
@@ -9,7 +9,7 @@ export default class NameService {
   /**
    * string
    */
-  #name: string = 'ArtOnlineNameService'
+  #name: string = 'LeofcoinNameService'
   /**
    * string
    */
@@ -33,7 +33,7 @@ export default class NameService {
   }
 
   get registry(): {} {
-    return {...this.#registry}
+    return { ...this.#registry }
   }
 
   get state() {
@@ -46,7 +46,13 @@ export default class NameService {
   }
 
   // TODO: control with contract
-  constructor(factoryAddress: address, currency: address, validatorAddress: address, price: BigNumberish, state: { owner: address; registry: registry; currency: address; price: BigNumberish }) {
+  constructor(
+    factoryAddress: address,
+    currency: address,
+    validatorAddress: address,
+    price: BigNumberish,
+    state: { owner: address; registry: registry; currency: address; price: BigNumberish }
+  ) {
     if (state) {
       this.#owner = state.owner
       this.#registry = state.registry
@@ -55,17 +61,17 @@ export default class NameService {
     } else {
       this.#owner = msg.sender
       this.#price = price
-      this.#registry['ArtOnlineContractFactory'] = {
+      this.#registry['LeofcoinContractFactory'] = {
         owner: msg.sender,
         address: factoryAddress
       }
 
-      this.#registry['ArtOnlineToken'] = {
+      this.#registry['LeofcoinToken'] = {
         owner: msg.sender,
         address: currency
       }
 
-      this.#registry['ArtOnlineValidators'] = {
+      this.#registry['LeofcoinValidators'] = {
         owner: msg.sender,
         address: validatorAddress
       }

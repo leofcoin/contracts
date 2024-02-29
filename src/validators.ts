@@ -4,29 +4,21 @@ export default class Validators extends Roles {
   /**
    * string
    */
-  #name = 'ArtOnlineValidators'
-  /**
-   * uint
-   */
-  #totalValidators = 0
-
-  #activeValidators = 0
+  #name = 'LeofcoinValidators'
   /**
    * Object => string(address) => Object
    */
-  #validators = {}
+  #validators: address[] = []
 
   #currency: address
 
-  #minimumBalance: BigNumberish
+  #minimumBalance: typeof BigNumber
 
   get state() {
     return {
       ...super.state,
       minimumBalance: this.#minimumBalance,
       currency: this.#currency,
-      totalValidators: this.#totalValidators,
-      activeValidators: this.#activeValidators,
       validators: this.#validators
     }
   }
@@ -34,25 +26,14 @@ export default class Validators extends Roles {
   constructor(tokenAddress: address, state) {
     super(state?.roles)
     if (state) {
-      this.#minimumBalance = state.minimumBalance
+      this.#minimumBalance = BigNumber['from'](state.minimumBalance)
       this.#currency = state.currency
-
-      this.#totalValidators = state.totalValidators
-      this.#activeValidators = state.activeValidators
       this.#validators = state.validators
     } else {
-      this.#minimumBalance = 50_000
+      this.#minimumBalance = new BigNumber['from'](50_000)
       this.#currency = tokenAddress
-
-      this.#totalValidators += 1
-      this.#activeValidators += 1
-      this.#validators[msg.sender] = {
-        firstSeen: Date.now(),
-        lastSeen: Date.now(),
-        active: true
-      }
+      this.#validators.push(msg.sender)
     }
-
   }
 
   get name() {
@@ -64,11 +45,11 @@ export default class Validators extends Roles {
   }
 
   get validators() {
-    return {...this.#validators}
+    return [...this.#validators]
   }
 
   get totalValidators() {
-    return this.#totalValidators
+    return this.#validators.length
   }
 
   get minimumBalance() {
@@ -81,49 +62,30 @@ export default class Validators extends Roles {
   }
 
   has(validator) {
-    return Boolean(this.#validators[validator] !== undefined)
+    return this.#validators.includes(validator)
   }
 
   #isAllowed(address) {
-    if (msg.sender !== address && !this.hasRole(msg.sender, 'OWNER')) throw new Error('sender is not the validator or owner')
+    if (msg.sender !== address && !this.hasRole(msg.sender, 'OWNER'))
+      throw new Error('sender is not the validator or owner')
     return true
   }
 
   async addValidator(validator: address) {
     this.#isAllowed(validator)
     if (this.has(validator)) throw new Error('already a validator')
-    
+
     const balance = await msg.staticCall(this.currency, 'balanceOf', [validator])
 
-    if (balance < this.minimumBalance) throw new Error(`balance to low! got: ${balance} need: ${this.#minimumBalance}`)
+    if (this.minimumBalance.gt(balance))
+      throw new Error(`balance to low! got: ${balance} need: ${this.#minimumBalance}`)
 
-    this.#totalValidators += 1
-    this.#activeValidators += 1
-    this.#validators[validator] = {
-      firstSeen: Date.now(),
-      lastSeen: Date.now(),
-      active: true
-    }
+    this.#validators.push(validator)
   }
 
   removeValidator(validator) {
     this.#isAllowed(validator)
     if (!this.has(validator)) throw new Error('validator not found')
-    
-    this.#totalValidators -= 1
-    if (this.#validators[validator].active) this.#activeValidators -= 1
-    delete this.#validators[validator]
-  }
-
-  async updateValidator(validator, active) {
-    this.#isAllowed(validator)
-    if (!this.has(validator)) throw new Error('validator not found')
-    const balance = await msg.staticCall(this.currency, 'balanceOf', [validator])
-    if (balance < this.minimumBalance && active) throw new Error(`balance to low! got: ${balance} need: ${this.#minimumBalance}`)
-    if (this.#validators[validator].active === active) throw new Error(`already ${active ? 'activated' : 'deactivated'}`)
-    if (active) this.#activeValidators += 1
-    else this.#activeValidators -= 1
-    /** minimum balance always needs to be met */
-    this.#validators[validator].active = active
+    this.#validators.splice(this.#validators.indexOf(validator))
   }
 }
