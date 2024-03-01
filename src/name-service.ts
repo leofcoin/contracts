@@ -1,3 +1,6 @@
+import { Roles, TokenReceiver } from '@leofcoin/standards'
+import { TokenReceiverState } from '@leofcoin/standards/token-receiver'
+
 type registry = {
   name?: {
     address: address
@@ -5,28 +8,19 @@ type registry = {
   }
 }
 
-export default class NameService {
+export interface NameServiceState extends TokenReceiverState {
+  registry: registry
+}
+
+export default class NameService extends TokenReceiver {
   /**
    * string
    */
   #name: string = 'LeofcoinNameService'
   /**
-   * string
-   */
-  #owner: address
-  /**
-   * number
-   */
-  #price: BigNumberish = 0
-  /**
    * Object => string
    */
   #registry: registry = {}
-
-  /**
-   * => string
-   */
-  #currency: address
 
   get name(): string {
     return this.#name
@@ -36,31 +30,25 @@ export default class NameService {
     return { ...this.#registry }
   }
 
-  get state() {
+  get state(): NameServiceState {
     return {
-      owner: this.#owner,
-      registry: this.#registry,
-      currency: this.#currency,
-      price: this.#price
+      ...super.state,
+      registry: this.#registry
     }
   }
 
   // TODO: control with contract
   constructor(
     factoryAddress: address,
-    currency: address,
+    tokenToReceive: address,
     validatorAddress: address,
-    price: BigNumberish,
-    state: { owner: address; registry: registry; currency: address; price: BigNumberish }
+    tokenAmountToReceive: typeof BigNumber,
+    state: NameServiceState
   ) {
+    super(tokenToReceive, tokenAmountToReceive, true, state as TokenReceiverState)
     if (state) {
-      this.#owner = state.owner
       this.#registry = state.registry
-      this.#currency = state.currency
-      this.#price = state.price
     } else {
-      this.#owner = msg.sender
-      this.#price = price
       this.#registry['LeofcoinContractFactory'] = {
         owner: msg.sender,
         address: factoryAddress
@@ -68,41 +56,19 @@ export default class NameService {
 
       this.#registry['LeofcoinToken'] = {
         owner: msg.sender,
-        address: currency
+        address: tokenToReceive
       }
 
       this.#registry['LeofcoinValidators'] = {
         owner: msg.sender,
         address: validatorAddress
       }
-
-      this.#currency = currency
     }
-  }
-
-  changeOwner(owner: any) {
-    if (msg.sender !== this.#owner) throw new Error('no owner')
-    this.#owner = owner
-  }
-
-  changePrice(price: number) {
-    if (msg.sender !== this.#owner) throw new Error('no owner')
-    this.#price = price
-  }
-
-  changeCurrency(currency: any) {
-    if (msg.sender !== this.#owner) throw new Error('no owner')
-    this.#currency = currency
   }
 
   async purchaseName(name: string | number, address: any) {
-    const balance = await msg.call(this.#currency, 'balanceOf', [msg.sender])
-    if (balance < this.#price) throw new Error('price exceeds balance')
-    try {
-      await msg.call(this.#currency, 'transfer', [msg.sender, this.#owner, this.#price])
-    } catch (error) {
-      throw error
-    }
+    await this._canPay()
+    await this._payTokenToReceive()
 
     this.#registry[name] = {
       owner: msg.sender,
@@ -115,12 +81,12 @@ export default class NameService {
   }
 
   transferOwnership(name: string | number, to: any) {
-    if (msg.sender !== this.#registry[name].owner) throw new Error('not a owner')
+    if (msg.sender !== this.#registry[name].owner) throw new Error('not allowed')
     this.#registry[name].owner = to
   }
 
   changeAddress(name: string | number, address: any) {
-    if (msg.sender !== this.#registry[name].owner) throw new Error('not a owner')
+    if (msg.sender !== this.#registry[name].owner) throw new Error('not allowed')
     this.#registry[name].address = address
   }
 }

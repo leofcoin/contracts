@@ -15,11 +15,11 @@ export default class Factory extends TokenReceiver {
   /**
    * uint
    */
-  #totalContracts = BigNumber['from'](0)
+  #totalContracts: typeof BigNumber = BigNumber['from'](0)
   /**
    * Array => string
    */
-  #contracts = []
+  #contracts: address[] = []
 
   constructor(tokenToReceive: address, tokenAmountToReceive: typeof BigNumber, state: FactoryState) {
     super(tokenToReceive, tokenAmountToReceive, true, state as TokenReceiverState)
@@ -53,8 +53,8 @@ export default class Factory extends TokenReceiver {
     return this.#contracts.includes(address)
   }
 
-  #isOwner(address: address) {
-    return msg.staticCall(address, 'hasRole', [msg.sender, 'OWNER'])
+  #isCreator(address: address) {
+    return msg.staticCall(address, '_isContractCreator')
   }
 
   /**
@@ -64,7 +64,7 @@ export default class Factory extends TokenReceiver {
   async registerContract(address: string) {
     if (!this._canPay()) throw new Error(`can't register, balance to low`)
 
-    if (!(await this.#isOwner(address))) throw new Error(`You don't own that contract`)
+    if (!(await this.#isCreator(address))) throw new Error(`You don't own that contract`)
     if (this.#contracts.includes(address)) throw new Error('already registered')
     await this._payTokenToReceive()
     this.#totalContracts.add(1)

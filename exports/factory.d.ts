@@ -10,8 +10,8 @@ export default class Factory extends TokenReceiver {
     constructor(tokenToReceive: address, tokenAmountToReceive: typeof BigNumber, state: FactoryState);
     get state(): PublicVotingState;
     get name(): string;
-    get contracts(): any[];
-    get totalContracts(): any;
+    get contracts(): string[];
+    get totalContracts(): import("@ethersproject/bignumber").BigNumber;
     isRegistered(address: any): boolean;
     /**
      *
