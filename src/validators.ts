@@ -30,7 +30,7 @@ export default class Validators extends Roles {
       this.#currency = state.currency
       this.#validators = state.validators
     } else {
-      this.#minimumBalance = new BigNumber['from'](50_000)
+      this.#minimumBalance = BigNumber['from'](50_000)
       this.#currency = tokenAddress
       this.#validators.push(msg.sender)
     }
