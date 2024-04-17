@@ -1,4 +1,5 @@
 import Roles from '@leofcoin/standards/roles.js'
+import { lottery } from 'lucky-numbers'
 
 export default class Validators extends Roles {
   /**
@@ -9,6 +10,8 @@ export default class Validators extends Roles {
    * Object => string(address) => Object
    */
   #validators: address[] = []
+
+  #currentValidator
 
   #currency: address
 
@@ -87,5 +90,34 @@ export default class Validators extends Roles {
     this.#isAllowed(validator)
     if (!this.has(validator)) throw new Error('validator not found')
     this.#validators.splice(this.#validators.indexOf(validator))
+  }
+
+  shuffleValidator() {
+    // todo introduce voting mechanism
+    // select amount of peers to vote & pass when 2/3 select the same peer
+    // this.vote
+    // todo only ids should be accessable
+    const _peers = globalThis.peernet.peers
+    const peers = _peers
+      // only validators make a chance
+      .filter((peer) => this.#validators[peer[0]])
+      // add up the bytes
+      .map((peer) => {
+        peer[1].totalBytes = peer[1].bw.up + peer[1].bw.down
+        return peer
+      })
+      .sort((a, b) => b[1].totalBytes - a[1].totalBytes)
+      // only return 128 best participating max
+      .splice(0, _peers.length > 128 ? 128 : _peers.length)
+
+    const luckyNumber = lottery(1, peers.length)
+    let nextValidator = this.#validators[peers[luckyNumber[0]][0]]
+    // redraw when the validator is the same
+    // but keep the net alive when only one validator is found
+    if (this.#currentValidator === nextValidator && peers.length !== 1) {
+      const luckyNumber = lottery(1, peers.length)
+      nextValidator = this.#validators[peers[luckyNumber[0]][0]]
+    }
+    this.#currentValidator = nextValidator
   }
 }

@@ -28,7 +28,8 @@
   "dependencies": {
     "@changesets/cli": "^2.27.1",
     "@leofcoin/global-types": "^1.0.0",
-    "@leofcoin/standards": "^0.2.2"
+    "@leofcoin/standards": "^0.2.2",
+    "lucky-numbers": "^1.2.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.1",
