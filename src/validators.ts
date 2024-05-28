@@ -17,6 +17,8 @@ export default class Validators extends Roles {
 
   #minimumBalance: typeof BigNumber
 
+  #balances: { [address: address]: typeof BigNumber }
+
   get state() {
     return {
       ...super.state,
@@ -83,12 +85,16 @@ export default class Validators extends Roles {
     if (this.minimumBalance.gt(balance))
       throw new Error(`balance to low! got: ${balance} need: ${this.#minimumBalance}`)
 
+    await msg.staticCall(this.currency, 'transfer', [validator, msg.contract, this.#minimumBalance])
+    this.#balances[validator] = this.#minimumBalance
     this.#validators.push(validator)
   }
 
-  removeValidator(validator) {
+  async removeValidator(validator) {
     this.#isAllowed(validator)
     if (!this.has(validator)) throw new Error('validator not found')
+    await msg.staticCall(this.currency, 'transfer', [msg.contract, validator, this.#minimumBalance])
+    delete this.#balances[validator]
     this.#validators.splice(this.#validators.indexOf(validator))
   }
 
