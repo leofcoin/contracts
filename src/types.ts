@@ -1,2 +1,0 @@
-import '@leofcoin/global-types'
-
