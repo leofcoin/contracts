@@ -6,7 +6,8 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "declaration": true
+    "declaration": true,
+    "types": ["@leofcoin/types", "@leofcoin/types/global"]
   },
   "include": ["./src/**/*"]
 }

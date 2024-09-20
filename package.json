@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -26,16 +26,18 @@
   },
   "homepage": "https://github.com/leofcoin/contracts#readme",
   "dependencies": {
-    "@leofcoin/global-types": "^1.0.0",
-    "@leofcoin/standards": "^0.2.2",
-    "lucky-numbers": "^1.2.0"
+    "@leofcoin/standards": "^0.2.11",
+    "lucky-numbers": "^1.2.1"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.7",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-terser": "^0.4.0",
-    "@rollup/plugin-typescript": "^11.0.0",
-    "rollup": "^3.17.2",
-    "tslib": "^2.5.0"
+    "@leofcoin/types": "^1.0.17",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "chai": "^5.1.1",
+    "chai-as-promised": "^8.0.0",
+    "mocha": "^10.7.3",
+    "rollup": "^4.22.2",
+    "tslib": "^2.7.0"
   }
 }
