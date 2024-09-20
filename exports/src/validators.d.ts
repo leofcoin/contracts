@@ -1,21 +1,36 @@
-import Roles from '@leofcoin/standards/roles.js';
+/// <reference types="@leofcoin/types/global" />
+import Roles, { RolesState } from '@leofcoin/standards/roles.js';
+export declare interface ValidatorsState extends RolesState {
+    balances: {
+        [address: string]: bigint;
+    };
+    minimumBalance: bigint;
+    currency: address;
+    validators: address[];
+    currentValidator: address;
+}
 export default class Validators extends Roles {
     #private;
     get state(): {
-        minimumBalance: import("@ethersproject/bignumber").BigNumber;
+        balances: {
+            [address: string]: bigint;
+        };
+        minimumBalance: bigint;
         currency: string;
         validators: string[];
+        currentValidator: string;
         roles: {
             [index: string]: string[];
         };
         contractCreator: string;
     };
-    constructor(tokenAddress: address, state: any);
+    constructor(tokenAddress: address, state: ValidatorsState);
+    get currentValidator(): string;
     get name(): string;
     get currency(): string;
     get validators(): string[];
     get totalValidators(): number;
-    get minimumBalance(): import("@ethersproject/bignumber").BigNumber;
+    get minimumBalance(): bigint;
     changeCurrency(currency: any): void;
     has(validator: any): boolean;
     addValidator(validator: address): Promise<void>;

@@ -14,7 +14,7 @@ export default class NameService extends TokenReceiver {
     get name(): string;
     get registry(): {};
     get state(): NameServiceState;
-    constructor(factoryAddress: address, tokenToReceive: address, validatorAddress: address, tokenAmountToReceive: typeof BigNumber, state: NameServiceState);
+    constructor(factoryAddress: address, tokenToReceive: address, validatorAddress: address, tokenAmountToReceive: bigint, state: NameServiceState);
     purchaseName(name: string | number, address: any): Promise<void>;
     lookup(name: string | number): any;
     transferOwnership(name: string | number, to: any): void;
