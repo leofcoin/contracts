@@ -4,7 +4,7 @@ import { TokenReceiverState } from '@leofcoin/standards/token-receiver'
 
 export interface FactoryState extends TokenReceiverState {
   contracts: any[]
-  totalContracts: typeof BigNumber
+  totalContracts: bigint
 }
 
 export default class Factory extends TokenReceiver {
@@ -15,13 +15,13 @@ export default class Factory extends TokenReceiver {
   /**
    * uint
    */
-  #totalContracts: typeof BigNumber = BigNumber['from'](0)
+  #totalContracts: bigint = BigInt(0)
   /**
    * Array => string
    */
   #contracts: address[] = []
 
-  constructor(tokenToReceive: address, tokenAmountToReceive: typeof BigNumber, state: FactoryState) {
+  constructor(tokenToReceive: address, tokenAmountToReceive: bigint, state: FactoryState) {
     super(tokenToReceive, tokenAmountToReceive, true, state as TokenReceiverState)
     if (state) {
       this.#contracts = state.contracts
@@ -67,7 +67,7 @@ export default class Factory extends TokenReceiver {
     if (!(await this.#isCreator(address))) throw new Error(`You don't own that contract`)
     if (this.#contracts.includes(address)) throw new Error('already registered')
     await this._payTokenToReceive()
-    this.#totalContracts.add(1)
+    this.#totalContracts += 1n
     this.#contracts.push(address)
   }
 }

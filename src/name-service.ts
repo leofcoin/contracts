@@ -42,7 +42,7 @@ export default class NameService extends TokenReceiver {
     factoryAddress: address,
     tokenToReceive: address,
     validatorAddress: address,
-    tokenAmountToReceive: typeof BigNumber,
+    tokenAmountToReceive: bigint,
     state: NameServiceState
   ) {
     super(tokenToReceive, tokenAmountToReceive, true, state as TokenReceiverState)
