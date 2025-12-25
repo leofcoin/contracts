@@ -1,6 +1,6 @@
 import { PublicVoting, TokenReceiver } from '@leofcoin/standards'
-import type { PublicVotingState } from '@leofcoin/standards/public-voting'
-import { TokenReceiverState } from '@leofcoin/standards/token-receiver'
+
+import { TokenReceiverState } from '@leofcoin/standards/token-receiver.js'
 
 export interface FactoryState extends TokenReceiverState {
   contracts: any[]
@@ -29,9 +29,10 @@ export default class Factory extends TokenReceiver {
     }
   }
 
-  get state(): PublicVotingState {
+  get state(): FactoryState {
+    const baseState = super.state as TokenReceiverState
     return {
-      ...super.state,
+      ...baseState,
       totalContracts: this.#totalContracts,
       contracts: this.#contracts
     }
@@ -54,7 +55,14 @@ export default class Factory extends TokenReceiver {
   }
 
   #isCreator(address: address) {
-    return msg.staticCall(address, '_isContractCreator')
+    return msg.staticCall(address, 'creator', [msg.sender]) as unknown as boolean
+  }
+
+  /**
+   * Public hook for creator check to ease testing/stubbing.
+   */
+  isCreator(address: address) {
+    return this.#isCreator(address)
   }
 
   /**
@@ -62,9 +70,7 @@ export default class Factory extends TokenReceiver {
    * @param {Address} address contract address to register
    */
   async registerContract(address: string) {
-    if (!this._canPay()) throw new Error(`can't register, balance to low`)
-
-    if (!(await this.#isCreator(address))) throw new Error(`You don't own that contract`)
+    if (!(await this.isCreator(address))) throw new Error(`You don't own that contract`)
     if (this.#contracts.includes(address)) throw new Error('already registered')
     await this._payTokenToReceive()
     this.#totalContracts += 1n

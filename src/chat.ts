@@ -18,7 +18,7 @@ export default class Chat extends TokenReceiver {
   }
 
   async changeNickName(newName: string) {
-    await this._canPay()
+    await this._canVote()
     await this._payTokenToReceive()
     this.#nicknames[msg.sender] = newName
   }

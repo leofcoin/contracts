@@ -1,5 +1,6 @@
 import { lottery } from 'lucky-numbers'
-import Roles, { RolesState } from '@leofcoin/standards/roles.js'
+import Roles from '@leofcoin/standards/roles.js'
+import type { RolesState } from '@leofcoin/standards/interfaces.js'
 
 export declare interface ValidatorsState extends RolesState {
   balances: { [address: string]: bigint }
@@ -39,7 +40,7 @@ export default class Validators extends Roles {
   }
 
   constructor(tokenAddress: address, state: ValidatorsState) {
-    super(state?.roles)
+    super(state)
     if (state) {
       this.#minimumBalance = BigInt(state.minimumBalance)
       this.#currency = state.currency

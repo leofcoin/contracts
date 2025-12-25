@@ -1,4 +1,4 @@
-import { Roles, TokenReceiver } from '@leofcoin/standards'
+import { TokenReceiver } from '@leofcoin/standards'
 import { TokenReceiverState } from '@leofcoin/standards/token-receiver'
 
 type registry = {
@@ -31,8 +31,9 @@ export default class NameService extends TokenReceiver {
   }
 
   get state(): NameServiceState {
+    const baseState = super.state as TokenReceiverState
     return {
-      ...super.state,
+      ...baseState,
       registry: this.#registry
     }
   }
@@ -51,7 +52,7 @@ export default class NameService extends TokenReceiver {
     } else {
       this.#registry['LeofcoinContractFactory'] = {
         owner: msg.sender,
-        address: factoryAddress
+        address: msg.contract
       }
 
       this.#registry['LeofcoinToken'] = {
@@ -67,7 +68,7 @@ export default class NameService extends TokenReceiver {
   }
 
   async purchaseName(name: string | number, address: any) {
-    await this._canPay()
+    if (this.#registry[name]) throw new Error('name already registered')
     await this._payTokenToReceive()
 
     this.#registry[name] = {

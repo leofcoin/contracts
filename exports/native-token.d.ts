@@ -1,5 +1,5 @@
-import { IToken } from '@leofcoin/standards/interfaces/i-token';
 import Token, { TokenState } from '@leofcoin/standards/token.js';
-export default class Leofcoin extends Token implements IToken {
+export default class Leofcoin extends Token {
     constructor(state: TokenState);
+    burn(from: address, amount: bigint): void;
 }

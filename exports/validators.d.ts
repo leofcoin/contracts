@@ -1,4 +1,5 @@
-import Roles, { RolesState } from '@leofcoin/standards/roles.js';
+import Roles from '@leofcoin/standards/roles.js';
+import type { RolesState } from '@leofcoin/standards/interfaces.js';
 export declare interface ValidatorsState extends RolesState {
     balances: {
         [address: string]: bigint;
@@ -18,10 +19,6 @@ export default class Validators extends Roles {
         currency: string;
         validators: string[];
         currentValidator: string;
-        roles: {
-            [index: string]: address[];
-        };
-        contractCreator: address;
     };
     constructor(tokenAddress: address, state: ValidatorsState);
     get currentValidator(): string;

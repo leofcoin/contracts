@@ -1,6 +1,5 @@
 import { TokenReceiver } from '@leofcoin/standards';
-import type { PublicVotingState } from '@leofcoin/standards/public-voting';
-import { TokenReceiverState } from '@leofcoin/standards/token-receiver';
+import { TokenReceiverState } from '@leofcoin/standards/token-receiver.js';
 export interface FactoryState extends TokenReceiverState {
     contracts: any[];
     totalContracts: bigint;
@@ -8,11 +7,15 @@ export interface FactoryState extends TokenReceiverState {
 export default class Factory extends TokenReceiver {
     #private;
     constructor(tokenToReceive: address, tokenAmountToReceive: bigint, state: FactoryState);
-    get state(): PublicVotingState;
+    get state(): FactoryState;
     get name(): string;
     get contracts(): string[];
     get totalContracts(): bigint;
     isRegistered(address: any): boolean;
+    /**
+     * Public hook for creator check to ease testing/stubbing.
+     */
+    isCreator(address: address): boolean;
     /**
      *
      * @param {Address} address contract address to register
