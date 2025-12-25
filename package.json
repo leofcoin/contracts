@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/leofcoin/contracts#readme",
   "dependencies": {
-    "@leofcoin/standards": "^0.3.4",
+    "@leofcoin/standards": "^0.3.6",
     "lucky-numbers": "^1.2.1"
   },
   "devDependencies": {

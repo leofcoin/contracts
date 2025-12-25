@@ -110,6 +110,23 @@
         "development": 6,
         "total": 8
       }
+    },
+    {
+      "version": "0.1.15",
+      "timestamp": "2025-12-25T16:48:50.705Z",
+      "size": {
+        "bytes": 33746,
+        "formatted": "32.96 KB"
+      },
+      "nodeModules": {
+        "bytes": 40109779,
+        "formatted": "38.25 MB"
+      },
+      "dependencies": {
+        "production": 2,
+        "development": 6,
+        "total": 8
+      }
     }
   ]
 }
