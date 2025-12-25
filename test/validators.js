@@ -1,9 +1,6 @@
-import { expect, use } from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-import { describe, it, beforeEach } from 'mocha'
+import { describe, it, beforeEach } from 'node:test'
+import assert from 'node:assert/strict'
 import Validators from '../exports/validators.js'
-
-use(chaiAsPromised)
 
 describe('Validators', () => {
   let validators
@@ -39,82 +36,84 @@ describe('Validators', () => {
   })
 
   it('should initialize with default values', () => {
-    expect(validators.name).to.equal('LeofcoinValidators')
-    expect(validators.currency).to.equal(tokenAddress)
-    expect(validators.validators).to.deep.equal([ownerAddress])
-    expect(validators.totalValidators).to.equal(1)
-    expect(validators.minimumBalance.toString()).to.equal(BigInt(50000).toString())
+    assert.equal(validators.name, 'LeofcoinValidators')
+    assert.equal(validators.currency, tokenAddress)
+    assert.deepEqual(validators.validators, [ownerAddress])
+    assert.equal(validators.totalValidators, 1)
+    assert.equal(validators.minimumBalance.toString(), BigInt(50000).toString())
   })
 
   it('should change currency if sender is owner', () => {
     validators.changeCurrency('0xNewCurrencyAddress')
-    expect(validators.currency).to.equal('0xNewCurrencyAddress')
+    assert.equal(validators.currency, '0xNewCurrencyAddress')
   })
 
   it('should throw error if non-owner tries to change currency', () => {
     global.msg.sender = validatorAddress
-    expect(() => validators.changeCurrency('0xNewCurrencyAddress')).to.throw('not an owner')
+    assert.throws(() => validators.changeCurrency('0xNewCurrencyAddress'), {
+      message: 'not an owner'
+    })
   })
 
   it('should add a validator if conditions are met', async () => {
     await validators.addValidator(validatorAddress)
-    expect(validators.validators).to.include(validatorAddress)
-    expect(validators.totalValidators).to.equal(2)
+    assert.ok(validators.validators.includes(validatorAddress))
+    assert.equal(validators.totalValidators, 2)
   })
 
   it('should throw error if adding an existing validator', async () => {
     await validators.addValidator(validatorAddress)
-    await expect(validators.addValidator(validatorAddress)).to.be.rejectedWith(
-      'validator already exists'
-    )
+    await assert.rejects(async () => await validators.addValidator(validatorAddress), {
+      message: 'validator already exists'
+    })
   })
 
   it('should throw error if validator balance is too low', async () => {
     global.msg.staticCall = async (currency, method, args) => BigInt(1000)
-    await expect(validators.addValidator(anotherValidatorAddress)).to.be.rejectedWith(
-      'balance to low! got: 1000 need: 50000'
-    )
+    await assert.rejects(async () => await validators.addValidator(anotherValidatorAddress), {
+      message: 'balance to low! got: 1000 need: 50000'
+    })
   })
 
   it('should remove a validator if conditions are met', async () => {
     await validators.addValidator(validatorAddress)
     await validators.removeValidator(validatorAddress)
-    expect(validators.validators).to.not.include(validatorAddress)
-    expect(validators.totalValidators).to.equal(1)
+    assert.ok(!validators.validators.includes(validatorAddress))
+    assert.equal(validators.totalValidators, 1)
   })
 
   it('should throw error if removing a non-existing validator', async () => {
-    await expect(validators.removeValidator(validatorAddress)).to.be.rejectedWith(
-      'validator not found'
-    )
+    await assert.rejects(async () => await validators.removeValidator(validatorAddress), {
+      message: 'validator not found'
+    })
   })
 
   it('should shuffle validator correctly', async () => {
     validators.shuffleValidator()
-    expect(validators.currentValidator).to.include(ownerAddress)
+    assert.ok(validators.currentValidator.includes(ownerAddress))
     await validators.removeValidator(ownerAddress)
 
     global.msg.sender = validatorAddress
     await validators.addValidator(validatorAddress)
 
     validators.shuffleValidator()
-    expect(validators.currentValidator).to.include(validatorAddress)
+    assert.ok(validators.currentValidator.includes(validatorAddress))
   })
 
   it('should return the current validator', () => {
-    expect(validators.currentValidator).to.equal(ownerAddress)
+    assert.equal(validators.currentValidator, ownerAddress)
   })
 
   it('should return state correctly', async () => {
     msg.sender = validatorAddress
     await validators.addValidator(validatorAddress)
     validatorState = validators.state
-    expect(validatorState.validators).to.deep.equal([ownerAddress, validatorAddress])
+    assert.deepEqual(validatorState.validators, [ownerAddress, validatorAddress])
   })
 
   it('should restore from state correctly', () => {
     const newValidators = new Validators(tokenAddress, validatorState)
-    expect(newValidators.validators).to.deep.equal([ownerAddress, validatorAddress])
-    expect(newValidators.totalValidators).to.equal(2)
+    assert.deepEqual(newValidators.validators, [ownerAddress, validatorAddress])
+    assert.equal(newValidators.totalValidators, 2)
   })
 })
